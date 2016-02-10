@@ -12,7 +12,7 @@ require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 $upload_dir_info = wp_upload_dir();
 
-define ( 'ALTIMA_LOOKBOOK_VERSION', '0.1' );
+define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0' );
 define ( 'ALTIMA_LOOKBOOK_BASENAME', plugin_basename( __FILE__ ) );
 define ( 'ALTIMA_LOOKBOOK_NAME', trim( dirname( ALTIMA_LOOKBOOK_BASENAME ), '/' ) );
 define ( 'ALTIMA_LOOKBOOK_PLUGIN_DIR', untrailingslashit( dirname( __FILE__ ) ) );
@@ -26,45 +26,75 @@ define ( 'FULL_UPLOAD_PATH_THUMB', $upload_dir_info['basedir'] . '/' . UPLOAD_FO
 define ('SLIDER_TABLE', 'lookbook_sliders_free');
 define ('SLIDES_TABLE', 'lookbook_slides_free');
 
-require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/settings.php';
-require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/functions.php';
-require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/s_session.php';
-require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/manage_files.class.php';
-require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/slider.php';
+require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_settings.php';
+require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_functions.php';
+require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_s_session.php';
+require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfwManage_files.class.php';
+require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_slider.php';
 
 if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-    add_action( 'admin_notices', 'woocommerce_not_install_notice' );
+    add_action( 'admin_notices', 'alfw_woocommerce_not_install_notice' );
 }
 
-$wp_session = new s_session();
+$wp_session = new alfw_s_session();
 
-if ( is_admin() ) {
-    require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/admin/admin.php';
+function admin_css(){
+    wp_register_style( 'lighttabs', plugins_url( 'admin/css/lighttabs.css', __FILE__), array(), '', 'all' );
+    wp_register_style( 'jquery-ui', plugins_url( 'admin/css/jquery-ui.css', __FILE__), array(), '', 'all' );
+    wp_register_style( 'jquery-ui_theme', plugins_url( 'admin/css/jquery-ui.theme.css', __FILE__), array(), '', 'all' );
+    wp_register_style( 'main', plugins_url( 'admin/css/main.css', __FILE__), array(), '', 'all' );
+    wp_register_style( 'annotation', plugins_url( 'admin/css/annotation.css', __FILE__), array(), '', 'all' );
+
+    wp_enqueue_style( 'lighttabs' );
+    wp_enqueue_style( 'jquery-ui' );
+    wp_enqueue_style( 'jquery-ui_theme' );
+    wp_enqueue_style( 'main' );
+    wp_enqueue_style( 'annotation' );
+}
+
+function wpcycle_scripts_load() {
+    wp_register_script( 'cycle2', plugins_url( 'assets/js/cycle2/jquery.cycle2.min.js', __FILE__) );
+    wp_register_script( 'caption2', plugins_url( 'assets/js/cycle2/jquery.cycle2.caption2.min.js', __FILE__) );
+    wp_register_script( 'hotspots', plugins_url( 'admin/js/hotspots.js', __FILE__) );
+    wp_register_script( 'actual', plugins_url( 'assets/js/jquery.actual.js', __FILE__) );
+    wp_register_script( 'annotate', plugins_url( 'admin/js/jquery.annotate.js', __FILE__) );
+    wp_register_script( 'carousel', plugins_url( 'assets/js/cycle2/jquery.cycle2.carousel.min.js', __FILE__) );
+    wp_register_script( 'flip', plugins_url( 'assets/js/cycle2/jquery.cycle2.flip.min.js', __FILE__) );
+    wp_register_script( 'scrolV', plugins_url( 'assets/js/cycle2/jquery.cycle2.scrollVert.min.js', __FILE__) );
+    wp_register_script( 'shuffle', plugins_url( 'assets/js/cycle2/jquery.cycle2.shuffle.min.js', __FILE__) );
+    wp_register_script( 'tile', plugins_url( 'assets/js/cycle2/jquery.cycle2.tile.min.js', __FILE__) );
+    wp_register_script( 'additionalEffect', plugins_url( 'assets/js/cycle2/jquery.cycle2.addEffects.js', __FILE__) );
+    wp_register_script( 'swipe', plugins_url( 'assets/js/cycle2/jquery.cycle2.swipe.min.js', __FILE__) );
+
+    wp_register_style( 'lookbook', plugins_url( 'assets/css/lookbook.css', __FILE__), array(), '', 'all' );
+}
+
+function admin_js(){
+    wp_register_script( 'jquery-ui', plugins_url( 'admin/js/jquery-ui-1.9.1.js', __FILE__ ) );
+    wp_register_script( 'lighttabs', plugins_url( 'admin/js/lighttabs.js', __FILE__ ) );
+    wp_register_script( 'jquery_actual', plugins_url( 'assets/js/jquery.actual.js', __FILE__ ) );
+    wp_register_script( 'scripts', plugins_url( 'admin/js/scripts.js', __FILE__ ) );
+
+    wp_enqueue_script('jquery-ui');
+    wp_enqueue_script('lighttabs');
+    wp_enqueue_script('jquery_actual');
+    wp_enqueue_script('scripts');
 }
 
 /**
  * Init
  */
-add_action('init', 'lookbook_init');
-add_action('admin_menu', 'lookbook_add_menu');
-add_action('admin_head', 'admin_css' );
-add_action('admin_head', 'admin_js');
+add_action( 'init', 'lookbook_init' );
+add_action( 'admin_menu', 'lookbook_add_menu' );
+add_action( 'wp_enqueue_scripts', 'wpcycle_scripts_load' );
+add_action( 'admin_enqueue_scripts', 'wpcycle_scripts_load' );
+add_action( 'admin_enqueue_scripts', 'admin_css' );
+add_action( 'admin_enqueue_scripts', 'admin_js' );
 
-function admin_css(){
-    echo '<link rel="stylesheet" type="text/css" href="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/css/lighttabs.css">';
-    echo '<link rel="stylesheet" type="text/css" href="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/css/jquery-ui.css">';
-    echo '<link rel="stylesheet" type="text/css" href="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/css/jquery-ui.theme.css">';
-    echo '<link rel="stylesheet" type="text/css" href="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/css/main.css">';
-    echo '<link rel="stylesheet" type="text/css" href="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/css/annotation.css">';
+
+if ( is_admin() ) {
+    require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/admin/admin.php';
 }
-
-function admin_js(){
-    echo '<script type="text/javascript" src="' . ALTIMA_LOOKBOOK_PLUGIN_URL .'/admin/js/jquery-ui-1.9.1.js"></script>';
-    echo '<script type="text/javascript" src="' . ALTIMA_LOOKBOOK_PLUGIN_URL .'/admin/js/lighttabs.js"></script>';
-    echo '<script type="text/javascript" src="' . ALTIMA_LOOKBOOK_PLUGIN_URL .'/assets/js/jquery.actual.js"></script>';
-    echo '<script type="text/javascript" src="' . ALTIMA_LOOKBOOK_PLUGIN_URL .'/admin/js/scripts.js"></script>';
-}
-
 
 function lookbook_init() {
     do_action( 'lookbook_init' );
@@ -74,8 +104,8 @@ add_action('wp_print_scripts', 'load_slider_scripts');
 
 function load_slider_scripts() {
     wp_enqueue_style ('lookbook');
-    wp_enqueue_script('cycle2');
-    wp_enqueue_script('caption2');
+    wp_enqueue_script ('cycle2');
+    wp_enqueue_script ('caption2');
 }
 
 function lookbook_install () {
@@ -171,7 +201,7 @@ function lookbook_install () {
     /**
      * Create default folder for picture
      */
-    $file = new manage_files();
+    $file = new alfw_manage_files();
     $file->create_folder_recursive(FULL_UPLOAD_PATH);
     $file->create_folder_recursive(FULL_UPLOAD_PATH_THUMB);
     $file->create_folder_recursive(FULL_UPLOAD_PATH_ORIG);

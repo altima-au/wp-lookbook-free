@@ -97,7 +97,7 @@ function lb_settings() {
                 </td>
                 <td class="value">
                         <?php
-                            echo lb_form_select( 'wplb_free_hotspots_overlap', get_option('wplb_free_hotspots_overlap'), array('0'=>__('No'), '1'=>__('Yes')), array('class'=>'select', 'id'=>'lookbookslider_general_interdict_areas_overlap') );
+                            echo alfw_form_select( 'wplb_free_hotspots_overlap', get_option('wplb_free_hotspots_overlap'), array('0'=>__('No'), '1'=>__('Yes')), array('class'=>'select', 'id'=>'lookbookslider_general_interdict_areas_overlap') );
                         ?>
                         <p class="note"><span><?php echo __('If "Yes", will disallow hotspots areas overlap');?></span></p>
                 </td>
@@ -239,7 +239,7 @@ function add_slider($slider_id = 1) {
                     <label for="slider_effect">'.__('Transition effect').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_slider_effect[]', $res[0]['slider_effect'], $lookbook_slider_effects, $attrbutes = array("multiple"=>"multiple", "size"=>"10", "id"=>"slider_effect", "class"=>"lb_multisel")) .'
+                    alfw_form_select('lb_slider_effect[]', $res[0]['slider_effect'], $lookbook_slider_effects, $attrbutes = array("multiple"=>"multiple", "size"=>"10", "id"=>"slider_effect", "class"=>"lb_multisel")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -248,7 +248,7 @@ function add_slider($slider_id = 1) {
                     <label for="show_navigation">'.__('Show navigation').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_show_navigation', $res[0]['show_navigation'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_navigation")) .'
+                    alfw_form_select('lb_show_navigation', $res[0]['show_navigation'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_navigation")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -257,7 +257,7 @@ function add_slider($slider_id = 1) {
                     <label for="navigation_on_hover_state_only">'.__('Navigation on hover state only').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_navigation_on_hover_state_only', $res[0]['navigation_on_hover_state_only'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"navigation_on_hover_state_only")) .'
+                    alfw_form_select('lb_navigation_on_hover_state_only', $res[0]['navigation_on_hover_state_only'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"navigation_on_hover_state_only")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -266,7 +266,7 @@ function add_slider($slider_id = 1) {
                     <label for="show_thumbnails">'.__('Show thumbnails').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_show_thumbnails', $res[0]['show_thumbnails'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_thumbnails")) .'
+                    alfw_form_select('lb_show_thumbnails', $res[0]['show_thumbnails'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_thumbnails")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -275,7 +275,7 @@ function add_slider($slider_id = 1) {
                     <label for="deny_resize_img">'.__('Deny resize images').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_deny_resize_img', $res[0]['deny_resize_img'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"deny_resize_img")) .'
+                    alfw_form_select('lb_deny_resize_img', $res[0]['deny_resize_img'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"deny_resize_img")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -320,7 +320,7 @@ function add_slider($slider_id = 1) {
                     <label for="status">'.__('Status').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_status', $res[0]['status'], array('0'=>__('Disabled'), '1'=>__('Enabled')), $attrbutes = array( "id"=>"status")) .'
+                    alfw_form_select('lb_status', $res[0]['status'], array('0'=>__('Disabled'), '1'=>__('Enabled')), $attrbutes = array( "id"=>"status")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -329,7 +329,7 @@ function add_slider($slider_id = 1) {
                     <label for="show_slide_caption">'.__('Show Slide Caption').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_show_slide_caption', $res[0]['show_slide_caption'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_slide_caption")) .'
+                    alfw_form_select('lb_show_slide_caption', $res[0]['show_slide_caption'], array('0'=>__('No'), '1'=>__('Yes')), $attrbutes = array( "id"=>"show_slide_caption")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -515,7 +515,7 @@ function manage_slides($slider_id = 1) {
 function store_slide() {
     global $url_tail, $wp_session, $wpdb;
 
-    $file = new manage_files();
+    $file = new alfw_manage_files();
 
 
     $wpdb->show_errors();
@@ -940,7 +940,7 @@ function add_slides() {
                     <label for="lb_status">'.__('Status').'</label>
                 </td>
                 <td class="value">'.
-                    lb_form_select('lb_status', @$res[0]['status'], array('0'=>__('Disabled'), '1'=>__('Enabled')), $attrbutes = array( "id"=>"lb_status")) .'
+                    alfw_form_select('lb_status', @$res[0]['status'], array('0'=>__('Disabled'), '1'=>__('Enabled')), $attrbutes = array( "id"=>"lb_status")) .'
                 </td>
                 <td class=""></td>
             </tr>
@@ -1005,7 +1005,7 @@ function del_slider() {
 
     $error_statuses = array();
 
-    $file = new manage_files();
+    $file = new alfw_manage_files();
 
     if (isset($_POST['id']) && is_numeric($_POST['id'])) {
 
@@ -1044,7 +1044,7 @@ function del_slides() {
     global $url_tail, $wp_session, $wpdb;
     $error_statuses = array();
 
-    $file = new manage_files();
+    $file = new alfw_manage_files();
 
     if (isset($_POST['id']) && is_numeric($_POST['id'])) {
         $res = array();
@@ -1135,7 +1135,7 @@ function view_slider() {
 
 function ajax_upload() {
     global $wpdb;
-    $file = new manage_files();
+    $file = new alfw_manage_files();
     /**
      * Max file size and file extensions
      */
@@ -1143,7 +1143,7 @@ function ajax_upload() {
         'size' => get_option('wplb_free_max_file_size'),
         'ext' => get_option('wplb_free_allow_ext')
     );
-    $check_result = check_slider_image_restriction($_FILES['lb_picture'], $restrictions);
+    $check_result = alfw_check_slider_image_restriction($_FILES['lb_picture'], $restrictions);
 
     if ($check_result['error']) {
         echo json_encode(array('error'=>true, 'msg'=>$check_result['error_msg']));
@@ -1267,7 +1267,7 @@ function ajax_upload() {
  */
 function packet_resize($slider_id, $picture_folder_name, $dimension_keys = array()){
     global $wpdb;
-    $file = new manage_files();
+    $file = new alfw_manage_files();
 
     /**
      * Get slider options

@@ -1,0 +1,217 @@
+.lookbook_promo {
+	display:block;
+	position:relative;
+	width:95%;
+	box-sizing:border-box;
+	background:#F26232 !important;
+	border:none !important;	
+	padding:20px 170px 20px 170px !important;
+	margin-bottom:20px;
+}
+
+.lookbook_promo p {
+	text-align:center;
+	font-size:22px;
+	color:#fff;	
+	margin-bottom:15px !important;
+	margin-top:0 !important;
+}
+
+.lookbook_promo a.get_pro {
+	display:block;
+	text-decoration:none;
+	padding:10px 10px 10px 40px;
+	border:1px solid #fff;
+	position:relative;
+	font-size:15px;
+	color:#fff;
+	font-weight:bold;
+	width:325px;
+	margin:0 auto;
+	-webkit-transition: all 300ms linear;
+    -moz-transition: all 300ms linear;
+    -o-transition: all 300ms linear;
+    -ms-transition: all 300ms linear;
+    transition: all 300ms linear;
+}
+
+.lookbook_promo a.get_pro:hover {
+	background:#fff;
+	color:#F26232;
+	-webkit-transition: all 400ms linear;
+    -moz-transition: all 400ms linear;
+    -o-transition: all 400ms linear;
+    -ms-transition: all 400ms linear;
+    transition: all 400ms linear;	
+}
+
+.lookbook_promo a.get_pro img {
+	display:block;
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:20px;height:20px;	
+}
+
+.lookbook_promo .altima_logo_firm {
+	position:absolute;
+	display:block;
+	width:114px;height:27px;
+	left:20px;
+	top:25px;	
+}
+
+.ui-datepicker-calendar {
+    display: none;
+}
+
+#datepicker_gpmis_carhtl, #datepicker_product, #datepicker_gtmis_venbypcc {
+    width: 70px;
+}
+
+.error {
+    border: 1px solid #ff0000;
+    color: #ff0000;
+}
+
+.operation_error {
+    color: #fff;
+    font-size: 1.5em;
+}
+
+#msg {
+    background: #0074a2 none repeat scroll 0 0;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.upload_file_list {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.upload_file_list th {
+    background-color: #0074a2;
+    color: #ffffff;
+}
+
+.upload_file_list td {
+    padding-left: 15px;
+}
+
+.dies-column {
+    width: 2.2em;
+    text-align: center;
+}
+
+.column-size {
+    width: 20%;
+}
+.status-column {
+    width: 10%;
+}
+.required {
+    color: #d54e21;
+    margin-left: 5px;
+}
+
+.lb_textarea {
+    width: 80%;
+    height: 100px;
+}
+
+.label {
+    width: 300px;
+}
+
+.value {
+    width: 90%;
+}
+
+.bottom_button {
+    margin: 10px 10px 0 0;
+    float: right;
+}
+
+.lb_multisel {
+    min-height: 100px;
+}
+
+.delete form {
+    display: inline;
+}
+
+.point_img {
+    display: block; min-height: 30px; margin-bottom: 5px;
+}
+
+.point_img_text {
+    min-width: 400px;
+}
+
+#upload_progress {
+    display: none;
+    background-image: url(../images/ajax-loader.gif);
+    width: 128px;
+    height: 15px;
+}
+
+.slide_shotrcode_exampl {
+    display: inline-block;
+}
+
+.flash_code {
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #206ea1;
+    margin: 0px 5px;
+}
+
+.shotcode_dialog {
+    display: none;
+    padding: 10px;
+}
+
+.edit a.getshcde {
+    color: darkgreen !important;
+}
+
+.ui-dialog-titlebar-close {
+    display: none;
+}
+.ui-dialog-buttonset {
+    text-align: center;
+    padding: 5px;
+}
+
+.ui-dialog-title {
+    text-wrap: none;
+    word-wrap: break-word;
+}
+
+.shotcode_dialog p {
+    text-align: center;
+}
+
+@media screen and (max-width:800px) {
+	.lookbook_promo {
+		position:relative;
+		background:#F26232 !important;
+		border:none !important;	
+		padding:40px 20px!important;
+	}
+	.lookbook_promo .altima_logo_firm {
+		position:relative;
+		top:0;
+		left:0;
+		margin:0 auto 20px;	
+	}	
+}
+
+@media screen and (max-width:500px) {
+	.lookbook_promo a.get_pro {
+		width:180px;
+		font-size:13px;	
+	}
+	.lookbook_promo a.get_pro img {top:36px;}
+}

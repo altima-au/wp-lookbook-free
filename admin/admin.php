@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 }
 
-function alfw_dushboard(){
+function alfw_dashboard(){
     global $admin_get_handlers;
     $error_msg = prepare_upload_msg();
     if (!empty($error_msg)) {

@@ -212,5 +212,5 @@ function lookbook_install () {
 register_activation_hook(__FILE__, 'lookbook_install');
 
 function lookbook_add_menu() {
-    add_menu_page(__('LookBookFree'), __('LookBookFree'), 'manage_options', 'lookbook', 'alfw_dushboard');
+    add_menu_page(__('LookBookFree'), __('LookBookFree'), 'manage_options', 'lookbook', 'alfw_dashboard');
 }

@@ -14,6 +14,8 @@ The plug-in allows WooCommerce merchants to create slider/carousel with multiple
 == Description ==
 
 Altima LookBook Free provides your online store with "Shop the look" experience. First of all it is intended for online retailers who use WooCommerce. 
+
+To view demo visit http://wplookbook.u2.com.ua/ 
 Altima Lookbooks Free for WooCommerce provides the next functionality:
 
     1. One slider.

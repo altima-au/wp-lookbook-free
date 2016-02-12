@@ -23,8 +23,8 @@ define ( 'UPLOAD_FOLDER_NAME_ORIG', 'sliders_free_orig');
 define ( 'FULL_UPLOAD_PATH', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME);
 define ( 'FULL_UPLOAD_PATH_ORIG', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_ORIG);
 define ( 'FULL_UPLOAD_PATH_THUMB', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_THUMB);
-define ('SLIDER_TABLE', 'lookbook_sliders_free');
-define ('SLIDES_TABLE', 'lookbook_slides_free');
+define ( 'SLIDER_TABLE', 'lookbook_sliders_free');
+define ( 'SLIDES_TABLE', 'lookbook_slides_free');
 
 require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_settings.php';
 require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_functions.php';
@@ -93,7 +93,9 @@ add_action( 'admin_enqueue_scripts', 'admin_js' );
 
 
 if ( is_admin() ) {
-    require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/admin/admin.php';
+    if( current_user_can('manage_options') ){
+        require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/admin/admin.php';
+    }
 }
 
 function lookbook_init() {
@@ -210,5 +212,5 @@ function lookbook_install () {
 register_activation_hook(__FILE__, 'lookbook_install');
 
 function lookbook_add_menu() {
-    add_menu_page(__('LookBookFree'), __('LookBookFree'), 'edit_pages', 'lookbook', 'dushboard');
+    add_menu_page(__('LookBookFree'), __('LookBookFree'), 'manage_options', 'lookbook', 'alfw_dushboard');
 }

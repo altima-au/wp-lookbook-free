@@ -16,9 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 }
 
-function dushboard(){
+function alfw_dushboard(){
     global $admin_get_handlers;
-
     $error_msg = prepare_upload_msg();
     if (!empty($error_msg)) {
         $error_msg = '<p class="operation_error">' . $error_msg . '</p>';
@@ -67,6 +66,8 @@ function lb_settings() {
 
         <form method="post" action="admin.php?page=lookbook&lb_action=store_options">
             <input type="hidden" name="page_options" value="<?php echo implode(',', array_keys($lookbook_settings_fields));?>" />
+
+            <?php wp_nonce_field( 'store_options', '_alfw_nonce'); ?>
 
         <table class="wp-list-table widefat fixed striped pages">
 
@@ -499,7 +500,15 @@ function manage_slides($slider_id = 1) {
                     <strong><a href="admin.php?page=lookbook&lb_action=add_slides&slider_id='.$slider_id.'&id='.$slider['id'].'">' . $slider['name'] . '</a><br>
                     <div class="row-actions">
                         <span class="edit"><a href="admin.php?page=lookbook&lb_action=add_slides&slider_id='.$slider_id.'&id='.$slider['id'].'">'.__('Edit').'</a>|</span>
-                        <span class="delete"><form id="del'.$slider['id'].'" method="post" action="admin.php?page=lookbook&lb_action=del_slides"><input type="hidden" name="id" value="'.$slider['id'].'"><input type="hidden" name="slider_id" value="'.$slider_id.'"><input type="hidden" name="lb_action" value="del_slides"><a href="#" class="delete-tag" onclick="if(confirm(\'Delete ?\')) jQuery(\'#del'.$slider['id'].'\').submit(); else return false;">'.__('Delete').'</a></form>|</span>
+                        <span class="delete">
+                            <form id="del'.$slider['id'].'" method="post" action="admin.php?page=lookbook&lb_action=del_slides">
+                            <input type="hidden" name="id" value="'.$slider['id'].'">
+                            <input type="hidden" name="slider_id" value="'.$slider_id.'">
+                            <input type="hidden" name="lb_action" value="del_slides">
+                            <a href="#" class="delete-tag" onclick="if(confirm(\'Delete ?\')) jQuery(\'#del'.$slider['id'].'\').submit(); else return false;">'.__('Delete').'</a>';
+                            wp_nonce_field( 'del_slides', '_alfw_nonce');
+                        echo '</form>|
+                        </span>
                     </div>
                 </td>
                 <td>'.$slider['order_flag'].'</td>
@@ -515,160 +524,191 @@ function manage_slides($slider_id = 1) {
 function store_slide() {
     global $url_tail, $wp_session, $wpdb;
 
-    $file = new alfw_manage_files();
+    if ( ! empty( $_POST ) && check_admin_referer( 'store_slide', '_alfw_nonce' ) ) {
 
+        $file = new alfw_manage_files();
 
-    $wpdb->show_errors();
-    $user_data = prepare_data($_POST);
+        $wpdb->show_errors();
+        $user_data = prepare_data($_POST);
 
-    $create_slide = false;
+        $create_slide = false;
 
-        if (empty($_POST['slide_id'])) {
-            /**
-             * Insert
-             */
-            if ($wpdb->insert(
-                $wpdb->prefix . SLIDES_TABLE,
-                $user_data['data'],
-                $user_data['format']
-            )
-            ){
-                $error_statuses[] = __('Information saved');
-            } else {
-                $error_statuses[] = __('Information not saved');
-            }
-            $slide_id = $wpdb->insert_id;
-            $create_slide = true;
-        }else {
-            /**
-             * Update
-             */
-            if ($wpdb->update(
-                $wpdb->prefix . SLIDES_TABLE,
-                $user_data['data'],
-                array('id'=>$_POST['slide_id']),
-                $user_data['format'],
-                array( '%d' )
-            )
-            ){
-                $error_statuses[] = __('Information saved');
-            } else {
-                $error_statuses[] = __('Information not saved');
-            }
-            $slide_id = $_POST['slide_id'];
-        }
-
-        if ($_POST['tmp_picture']) {
-
-            /**
-             * Get slider options
-             */
-            $slider_options = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT
-                        id, deny_resize_img, width, height, thumb_width, thumb_height
-                    FROM
-                        `" . $wpdb->prefix . SLIDER_TABLE . "`
-                WHERE
-                    id = %d
-                ",
-                    $user_data['data']['slider_id']
-                ),
-                ARRAY_A
-            );
-
-            $upload_dir_info = wp_upload_dir();
-            $upload_dir_info = $upload_dir_info['basedir'];
-
-            /**
-             * Store original image
-             */
-            $file->create_folder_recursive(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'], 0755);
-            //$picture_name = $file->modif_file_name(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/", $_POST['tmp_picture_name']);
-            $picture_name = $file->copy_file($upload_dir_info . "/" . $_POST['tmp_picture'], FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/", $_POST['tmp_picture_name']);
-            /*
-            if (!copy($upload_dir_info . "/" . $_POST['tmp_picture'], FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/" . $_POST['tmp_picture_name'])){
-                throw new Exception('File can\'t copyed to destination folder!');
-            }
-            */
-            /**
-             * Work with thumb
-             */
-            $thumb_width = $slider_options[0]['thumb_width'];
-            $thumb_height = $slider_options[0]['thumb_height'];
-
-            /**
-             * Check orientation
-             */
-            $thumb_check_result = $file->check_orientation(
-                                    $thumb_width,
-                                    $thumb_height,
-                                    $upload_dir_info . "/" .$_POST['tmp_picture']
-            );
-
-            $force_resize_flag = true;
-
-            /**
-             * Different orientation
-             */
-            $need_places_thmb = false;
-            if (!$thumb_check_result['check']){
-                $force_resize_flag = false;
-                $thumb_height = $thumb_check_result['resize_height'];
-                $thumb_width = $thumb_check_result['resize_width'];
-                $need_places_thmb = true;
-            }
-
-            $file->resize_upload_img(
-                    $upload_dir_info . "/" .$_POST['tmp_picture'],
-                    $picture_name,
-                    $thumb_height,
-                    $thumb_width,
-                    FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/",
-                    $force_resize_flag
-            );
-
-            /**
-             * Centered image on canvas
-             */
-            if ($need_places_thmb) {
-                $file->center_place_img_to_canvas(
-                        $slider_options[0]['thumb_width'],
-                        $slider_options[0]['thumb_height'],
-                        $thumb_check_result['frame_orient'],
-                        FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/" . $picture_name
-                );
-            }
-
-            /**
-             * Work with main picture
-             */
-
-            /**
-             * Check orientation
-             */
-            $check_result = $file->check_orientation(
-                $slider_options[0]['width'],
-                $slider_options[0]['height'],
-                $upload_dir_info . "/" .$_POST['tmp_picture']
-            );
-
-            if ($slider_options[0]['deny_resize_img']) {
+            if (empty($_POST['slide_id'])) {
                 /**
-                 * No resize image
+                 * Insert
+                 */
+                if ($wpdb->insert(
+                    $wpdb->prefix . SLIDES_TABLE,
+                    $user_data['data'],
+                    $user_data['format']
+                )
+                ){
+                    $error_statuses[] = __('Information saved');
+                } else {
+                    $error_statuses[] = __('Information not saved');
+                }
+                $slide_id = $wpdb->insert_id;
+                $create_slide = true;
+            }else {
+                /**
+                 * Update
+                 */
+                if ($wpdb->update(
+                    $wpdb->prefix . SLIDES_TABLE,
+                    $user_data['data'],
+                    array('id'=>$_POST['slide_id']),
+                    $user_data['format'],
+                    array( '%d' )
+                )
+                ){
+                    $error_statuses[] = __('Information saved');
+                } else {
+                    $error_statuses[] = __('Information not saved');
+                }
+                $slide_id = $_POST['slide_id'];
+            }
+
+            if ($_POST['tmp_picture']) {
+
+                /**
+                 * Get slider options
+                 */
+                $slider_options = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT
+                            id, deny_resize_img, width, height, thumb_width, thumb_height
+                        FROM
+                            `" . $wpdb->prefix . SLIDER_TABLE . "`
+                    WHERE
+                        id = %d
+                    ",
+                        $user_data['data']['slider_id']
+                    ),
+                    ARRAY_A
+                );
+
+                $upload_dir_info = wp_upload_dir();
+                $upload_dir_info = $upload_dir_info['basedir'];
+
+                /**
+                 * Store original image
+                 */
+                $file->create_folder_recursive(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'], 0755);
+                //$picture_name = $file->modif_file_name(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/", $_POST['tmp_picture_name']);
+                $picture_name = $file->copy_file($upload_dir_info . "/" . $_POST['tmp_picture'], FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/", $_POST['tmp_picture_name']);
+                /*
+                if (!copy($upload_dir_info . "/" . $_POST['tmp_picture'], FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/" . $_POST['tmp_picture_name'])){
+                    throw new Exception('File can\'t copyed to destination folder!');
+                }
+                */
+                /**
+                 * Work with thumb
+                 */
+                $thumb_width = $slider_options[0]['thumb_width'];
+                $thumb_height = $slider_options[0]['thumb_height'];
+
+                /**
+                 * Check orientation
+                 */
+                $thumb_check_result = $file->check_orientation(
+                                        $thumb_width,
+                                        $thumb_height,
+                                        $upload_dir_info . "/" .$_POST['tmp_picture']
+                );
+
+                $force_resize_flag = true;
+
+                /**
+                 * Different orientation
+                 */
+                $need_places_thmb = false;
+                if (!$thumb_check_result['check']){
+                    $force_resize_flag = false;
+                    $thumb_height = $thumb_check_result['resize_height'];
+                    $thumb_width = $thumb_check_result['resize_width'];
+                    $need_places_thmb = true;
+                }
+
+                $file->resize_upload_img(
+                        $upload_dir_info . "/" .$_POST['tmp_picture'],
+                        $picture_name,
+                        $thumb_height,
+                        $thumb_width,
+                        FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/",
+                        $force_resize_flag
+                );
+
+                /**
+                 * Centered image on canvas
+                 */
+                if ($need_places_thmb) {
+                    $file->center_place_img_to_canvas(
+                            $slider_options[0]['thumb_width'],
+                            $slider_options[0]['thumb_height'],
+                            $thumb_check_result['frame_orient'],
+                            FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/" . $picture_name
+                    );
+                }
+
+                /**
+                 * Work with main picture
                  */
 
-                if ($check_result['check']){
-                    $file->copy_file(
-                        $upload_dir_info . "/" .$_POST['tmp_picture'],
-                        FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
-                        $picture_name
-                    );
+                /**
+                 * Check orientation
+                 */
+                $check_result = $file->check_orientation(
+                    $slider_options[0]['width'],
+                    $slider_options[0]['height'],
+                    $upload_dir_info . "/" .$_POST['tmp_picture']
+                );
+
+                if ($slider_options[0]['deny_resize_img']) {
+                    /**
+                     * No resize image
+                     */
+
+                    if ($check_result['check']){
+                        $file->copy_file(
+                            $upload_dir_info . "/" .$_POST['tmp_picture'],
+                            FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
+                            $picture_name
+                        );
+                    }else {
+                        /**
+                         * however needs correction
+                         */
+                        $file->resize_upload_img(
+                                $upload_dir_info . "/" .$_POST['tmp_picture'],
+                                $picture_name,
+                                $check_result['resize_height'],
+                                $check_result['resize_width'],
+                                FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
+                                false
+                            );
+
+                        $file->center_place_img_to_canvas(
+                            $slider_options[0]['width'],
+                            $slider_options[0]['height'],
+                            $check_result['frame_orient'],
+                            FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $picture_name
+                        );
+                    }
+
                 }else {
                     /**
-                     * however needs correction
+                     * Needs resize
                      */
-                    $file->resize_upload_img(
+                    if ($check_result['check']) {
+                            $file->resize_upload_img(
+                            $upload_dir_info . "/" .$_POST['tmp_picture'],
+                            $picture_name,
+                            $slider_options[0]['height'],
+                            $slider_options[0]['width'],
+                            FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
+                            true);
+                    }else {
+                            $file->resize_upload_img(
                             $upload_dir_info . "/" .$_POST['tmp_picture'],
                             $picture_name,
                             $check_result['resize_height'],
@@ -676,75 +716,45 @@ function store_slide() {
                             FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
                             false
                         );
+                        $file->center_place_img_to_canvas(
+                            $slider_options[0]['width'],
+                            $slider_options[0]['height'],
+                            $check_result['frame_orient'],
+                            FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $picture_name
+                        );
+                    }
 
-                    $file->center_place_img_to_canvas(
-                        $slider_options[0]['width'],
-                        $slider_options[0]['height'],
-                        $check_result['frame_orient'],
-                        FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $picture_name
-                    );
                 }
 
-            }else {
                 /**
-                 * Needs resize
+                 * Update picture field
                  */
-                if ($check_result['check']) {
-                        $file->resize_upload_img(
-                        $upload_dir_info . "/" .$_POST['tmp_picture'],
-                        $picture_name,
-                        $slider_options[0]['height'],
-                        $slider_options[0]['width'],
-                        FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
-                        true);
-                }else {
-                        $file->resize_upload_img(
-                        $upload_dir_info . "/" .$_POST['tmp_picture'],
-                        $picture_name,
-                        $check_result['resize_height'],
-                        $check_result['resize_width'],
-                        FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/",
-                        false
-                    );
-                    $file->center_place_img_to_canvas(
-                        $slider_options[0]['width'],
-                        $slider_options[0]['height'],
-                        $check_result['frame_orient'],
-                        FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $picture_name
-                    );
+                $wpdb->update(
+                    $wpdb->prefix . SLIDES_TABLE,
+                    array('picture' => $picture_name),
+                    array('id' => $slide_id),
+                    array('%s'),
+                    array( '%d' )
+                );
+
+                /**
+                 * Delete old picture
+                 */
+                if (!empty($_POST['old_picture']) && $picture_name) {
+                    $file->delete_file(FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
+                    $file->delete_file(FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
+                    $file->delete_file(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
                 }
 
+                /**
+                 * Delete tmp picture
+                 */
+                $file->delete_file($upload_dir_info . "/" .$_POST['tmp_picture']);
+                $file->delete_file($upload_dir_info . "/preview_" .$_POST['tmp_picture']);
             }
 
-            /**
-             * Update picture field
-             */
-            $wpdb->update(
-                $wpdb->prefix . SLIDES_TABLE,
-                array('picture' => $picture_name),
-                array('id' => $slide_id),
-                array('%s'),
-                array( '%d' )
-            );
-
-            /**
-             * Delete old picture
-             */
-            if (!empty($_POST['old_picture']) && $picture_name) {
-                $file->delete_file(FULL_UPLOAD_PATH . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
-                $file->delete_file(FULL_UPLOAD_PATH_THUMB . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
-                $file->delete_file(FULL_UPLOAD_PATH_ORIG . "/" . $slider_options[0]['id'] . "/" . $_POST['old_picture']);
-            }
-
-            /**
-             * Delete tmp picture
-             */
-            $file->delete_file($upload_dir_info . "/" .$_POST['tmp_picture']);
-            $file->delete_file($upload_dir_info . "/preview_" .$_POST['tmp_picture']);
-        }
-
-        //$url_tail = '&lb_action=manage_slides&id='.$_POST['lb_slider_id'];
-        $wp_session->s_set('errors', $error_statuses);
+            $wp_session->s_set('errors', $error_statuses);
+    }
 }
 
 function add_slides() {
@@ -839,10 +849,13 @@ function add_slides() {
             jQuery("#lb_picture_id").on("change", function() {
                 var file_data = jQuery("#lb_picture_id").prop("files")[0];
                 var form_data = new FormData();
+
                 jQuery("#upload_progress").show();
+
                 form_data.append("lb_picture", file_data);
                 form_data.append("noredirect", true);
                 form_data.append("slider_id", jQuery("#slider_id").val());
+                form_data.append("_alfw_nonce", jQuery("#_alfw_nonce").val());
 
                 jQuery.ajax({
                     url: "admin.php?page=lookbook&lb_action=ajax_upload",
@@ -853,7 +866,6 @@ function add_slides() {
                     data: form_data,
                     type: 'post',
                     success: function(data, status){
-                        console.log(data);
                         if (status == 'success') {
                             if (data.error) {
                                 var error_text = '';
@@ -891,9 +903,12 @@ function add_slides() {
                 <input type="hidden" name="old_picture" value="'.@$res[0]['picture'].'" />
                 <input type="hidden" name="lb_hotsposts" value="">
                 <input type="hidden" name="tmp_picture" value="" id="lb_tmp_picture">
-                <input type="hidden" name="tmp_picture_name" value="" id="lb_tmp_picture_name">
+                <input type="hidden" name="tmp_picture_name" value="" id="lb_tmp_picture_name">';
 
-            <table class="wp-list-table widefat fixed striped pages">
+            wp_nonce_field( 'store_slide', '_alfw_nonce');
+
+    echo
+        '<table class="wp-list-table widefat fixed striped pages">
 
             <tr>
                 <td class="label">
@@ -1041,47 +1056,47 @@ function del_slider() {
 
 function del_slides() {
 
-    global $url_tail, $wp_session, $wpdb;
-    $error_statuses = array();
+    if ( ! empty( $_POST ) && check_admin_referer( 'del_slides', '_alfw_nonce' ) ) {
 
-    $file = new alfw_manage_files();
+        global $url_tail, $wp_session, $wpdb;
+        $error_statuses = array();
 
-    if (isset($_POST['id']) && is_numeric($_POST['id'])) {
-        $res = array();
-        $res = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT
-                    *
-                FROM
-                    `" . $wpdb->prefix . SLIDES_TABLE . "`
-                WHERE
-                    id = %d",
-                $_POST['id']
-            ),
-            ARRAY_A
-        );
+        $file = new alfw_manage_files();
 
-        if ($wpdb->query(
-            $wpdb->prepare(
-                "
-                DELETE FROM `" . $wpdb->prefix. SLIDES_TABLE . "`
-		        WHERE id = %d
-		        ",
-                $_POST['id']
-            )
-        )){
-            $file->delete_file(FULL_UPLOAD_PATH . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
-            $file->delete_file(FULL_UPLOAD_PATH_THUMB . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
-            $file->delete_file(FULL_UPLOAD_PATH_ORIG . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
-            $error_statuses[] = __('Slide was deleted!');
-        }else {
-            $error_statuses[] = __('Slide was not deleted!');
+        if (isset($_POST['id']) && is_numeric($_POST['id'])) {
+            $res = array();
+            $res = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT
+                        *
+                    FROM
+                        `" . $wpdb->prefix . SLIDES_TABLE . "`
+                    WHERE
+                        id = %d",
+                    $_POST['id']
+                ),
+                ARRAY_A
+            );
+
+            if ($wpdb->query(
+                $wpdb->prepare(
+                    "
+                    DELETE FROM `" . $wpdb->prefix. SLIDES_TABLE . "`
+                    WHERE id = %d
+                    ",
+                    $_POST['id']
+                )
+            )){
+                $file->delete_file(FULL_UPLOAD_PATH . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
+                $file->delete_file(FULL_UPLOAD_PATH_THUMB . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
+                $file->delete_file(FULL_UPLOAD_PATH_ORIG . "/" . $_POST['slider_id'] . "/" . $res[0]['picture']);
+                $error_statuses[] = __('Slide was deleted!');
+            }else {
+                $error_statuses[] = __('Slide was not deleted!');
+            }
         }
+        $wp_session->s_set('errors', $error_statuses);
     }
-
-    //$url_tail = '&lb_action=manage_slides&id='.$_POST['slider_id'];
-    $wp_session->s_set('errors', $error_statuses);
-
 }
 
 function check_post_id() {
@@ -1134,127 +1149,132 @@ function view_slider() {
 }
 
 function ajax_upload() {
-    global $wpdb;
-    $file = new alfw_manage_files();
-    /**
-     * Max file size and file extensions
-     */
-    $restrictions = array(
-        'size' => get_option('wplb_free_max_file_size'),
-        'ext' => get_option('wplb_free_allow_ext')
-    );
-    $check_result = alfw_check_slider_image_restriction($_FILES['lb_picture'], $restrictions);
 
-    if ($check_result['error']) {
-        echo json_encode(array('error'=>true, 'msg'=>$check_result['error_msg']));
-    }else {
+    if ( ! empty( $_POST ) && check_admin_referer( 'store_slide', '_alfw_nonce' ) ) {
 
+        global $wpdb;
+
+        $file = new alfw_manage_files();
         /**
-         * Get slider options
+         * Max file size and file extensions
          */
-        $slider_options = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT
-                    id, deny_resize_img, width, height, thumb_width, thumb_height
-                FROM
-                    `" . $wpdb->prefix . SLIDER_TABLE . "`
-                WHERE
-                    id = %d
-                ",
-                $_POST['slider_id']
-            ),
-            ARRAY_A
+        $restrictions = array(
+            'size' => get_option('wplb_free_max_file_size'),
+            'ext' => get_option('wplb_free_allow_ext')
         );
+        $check_result = alfw_check_slider_image_restriction($_FILES['lb_picture'], $restrictions);
 
-        $upload_dir_info = wp_upload_dir();
-        preg_match("#\.(\w+)$#siu", $_FILES['lb_picture']['name'], $matches);
-        $tmp_file_name = time().$matches[0];
-        $tmp_file_name_preview = 'preview_' . $tmp_file_name;
+        if ($check_result['error']) {
+            echo json_encode(array('error'=>true, 'msg'=>$check_result['error_msg']));
+        }else {
 
-        /**
-         * Check orientation
-         */
-        $check_result = $file->check_orientation(
-            $slider_options[0]['width'],
-            $slider_options[0]['height'],
-            $_FILES['lb_picture']['tmp_name']
-        );
-
-        if ($slider_options[0]['deny_resize_img']) {
             /**
-             * No resize image
+             * Get slider options
              */
+            $slider_options = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT
+                        id, deny_resize_img, width, height, thumb_width, thumb_height
+                    FROM
+                        `" . $wpdb->prefix . SLIDER_TABLE . "`
+                    WHERE
+                        id = %d
+                    ",
+                    $_POST['slider_id']
+                ),
+                ARRAY_A
+            );
 
-            if ($check_result['check']){
-                $file->copy_file(
-                    $_FILES['lb_picture']['tmp_name'],
-                    $upload_dir_info['basedir'] . "/",
-                    $tmp_file_name_preview
-                );
+            $upload_dir_info = wp_upload_dir();
+            preg_match("#\.(\w+)$#siu", $_FILES['lb_picture']['name'], $matches);
+            $tmp_file_name = time().$matches[0];
+            $tmp_file_name_preview = 'preview_' . $tmp_file_name;
+
+            /**
+             * Check orientation
+             */
+            $check_result = $file->check_orientation(
+                $slider_options[0]['width'],
+                $slider_options[0]['height'],
+                $_FILES['lb_picture']['tmp_name']
+            );
+
+            if ($slider_options[0]['deny_resize_img']) {
+                /**
+                 * No resize image
+                 */
+
+                if ($check_result['check']){
+                    $file->copy_file(
+                        $_FILES['lb_picture']['tmp_name'],
+                        $upload_dir_info['basedir'] . "/",
+                        $tmp_file_name_preview
+                    );
+                }else {
+                    /**
+                     * however needs correction
+                     */
+                    $file->resize_upload_img(
+                        $_FILES['lb_picture']['tmp_name'],
+                        $tmp_file_name_preview,
+                        $check_result['resize_height'],
+                        $check_result['resize_width'],
+                        $upload_dir_info['basedir'] . "/",
+                        false
+                    );
+
+                    $file->center_place_img_to_canvas(
+                        $slider_options[0]['width'],
+                        $slider_options[0]['height'],
+                        $check_result['frame_orient'],
+                        $upload_dir_info['basedir'] . "/" . $tmp_file_name_preview
+                    );
+                }
+
             }else {
                 /**
-                 * however needs correction
+                 * Needs resize
                  */
-                $file->resize_upload_img(
-                    $_FILES['lb_picture']['tmp_name'],
-                    $tmp_file_name_preview,
-                    $check_result['resize_height'],
-                    $check_result['resize_width'],
-                    $upload_dir_info['basedir'] . "/",
-                    false
-                );
+                if ($check_result['check']) {
+                    $file->resize_upload_img(
+                        $_FILES['lb_picture']['tmp_name'],
+                        $tmp_file_name_preview,
+                        $slider_options[0]['height'],
+                        $slider_options[0]['width'],
+                        $upload_dir_info['basedir'] . "/",
+                        true);
+                }else {
+                    $file->resize_upload_img(
+                        $_FILES['lb_picture']['tmp_name'],
+                        $tmp_file_name_preview,
+                        $check_result['resize_height'],
+                        $check_result['resize_width'],
+                        $upload_dir_info['basedir'] . "/",
+                        false
+                    );
+                    $file->center_place_img_to_canvas(
+                        $slider_options[0]['width'],
+                        $slider_options[0]['height'],
+                        $check_result['frame_orient'],
+                        $upload_dir_info['basedir'] . "/" . $tmp_file_name_preview
+                    );
+                }
 
-                $file->center_place_img_to_canvas(
-                    $slider_options[0]['width'],
-                    $slider_options[0]['height'],
-                    $check_result['frame_orient'],
-                    $upload_dir_info['basedir'] . "/" . $tmp_file_name_preview
-                );
             }
 
-        }else {
             /**
-             * Needs resize
+             *  Original picture
              */
-            if ($check_result['check']) {
-                $file->resize_upload_img(
-                    $_FILES['lb_picture']['tmp_name'],
-                    $tmp_file_name_preview,
-                    $slider_options[0]['height'],
-                    $slider_options[0]['width'],
-                    $upload_dir_info['basedir'] . "/",
-                    true);
+            if ($picture = $file->upload_file(
+                $_FILES['lb_picture']['tmp_name'],
+                $upload_dir_info['basedir'] . "/",
+                $tmp_file_name
+                )
+            ){
+                echo json_encode(array('error'=>false, 'msg'=>array('File uploaded'), 'tmp_file'=>$picture, 'file_name'=>$_FILES['lb_picture']['name'], 'preview_file'=>$tmp_file_name_preview));
             }else {
-                $file->resize_upload_img(
-                    $_FILES['lb_picture']['tmp_name'],
-                    $tmp_file_name_preview,
-                    $check_result['resize_height'],
-                    $check_result['resize_width'],
-                    $upload_dir_info['basedir'] . "/",
-                    false
-                );
-                $file->center_place_img_to_canvas(
-                    $slider_options[0]['width'],
-                    $slider_options[0]['height'],
-                    $check_result['frame_orient'],
-                    $upload_dir_info['basedir'] . "/" . $tmp_file_name_preview
-                );
+                echo json_encode(array('error'=>true, 'msg'=>array('File not uploaded')));
             }
-
-        }
-
-        /**
-         *  Original picture
-         */
-        if ($picture = $file->upload_file(
-            $_FILES['lb_picture']['tmp_name'],
-            $upload_dir_info['basedir'] . "/",
-            $tmp_file_name
-            )
-        ){
-            echo json_encode(array('error'=>false, 'msg'=>array('File uploaded'), 'tmp_file'=>$picture, 'file_name'=>$_FILES['lb_picture']['name'], 'preview_file'=>$tmp_file_name_preview));
-        }else {
-            echo json_encode(array('error'=>true, 'msg'=>array('File not uploaded')));
         }
     }
     exit();
@@ -1382,13 +1402,22 @@ function packet_resize($slider_id, $picture_folder_name, $dimension_keys = array
 }
 
 function store_options() {
-    $look_book_options = explode(",", $_POST['page_options']);
-    foreach ($look_book_options as $option){
-        if (isset($_POST[$option])){
-            update_option( $option, $_POST[$option] );
+    if ( ! empty( $_POST ) && check_admin_referer( 'store_options', '_alfw_nonce' ) ) {
+        /**
+         * Storing plugin options
+         */
+        $look_book_options = explode(",", $_POST['page_options']);
+        foreach ($look_book_options as $option){
+            if (isset($_POST[$option])){
+                update_option( $option, $_POST[$option] );
+            }
         }
+
+        /**
+         * Storing slider option
+         */
+        store_slider();
     }
-    store_slider();
     wp_redirect("http://{$_SERVER['SERVER_NAME']}/wp-admin/admin.php?page=lookbook");
     exit;
 }

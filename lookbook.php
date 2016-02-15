@@ -70,7 +70,7 @@ function wpcycle_scripts_load() {
 }
 
 function admin_js(){
-    wp_register_script( 'jquery-ui', plugins_url( 'admin/js/jquery-ui-1.9.1.js', __FILE__ ) );
+    wp_register_script( 'jquery-ui', plugins_url( 'admin/js/jquery-ui.min.js', __FILE__ ) );
     wp_register_script( 'lighttabs', plugins_url( 'admin/js/lighttabs.js', __FILE__ ) );
     wp_register_script( 'jquery_actual', plugins_url( 'assets/js/jquery.actual.js', __FILE__ ) );
     wp_register_script( 'scripts', plugins_url( 'admin/js/scripts.js', __FILE__ ) );

@@ -40,14 +40,10 @@ $wp_session = new alfw_s_session();
 
 function admin_css(){
     wp_register_style( 'lighttabs', plugins_url( 'admin/css/lighttabs.css', __FILE__), array(), '', 'all' );
-    wp_register_style( 'jquery-ui', plugins_url( 'admin/css/jquery-ui.css', __FILE__), array(), '', 'all' );
-    wp_register_style( 'jquery-ui_theme', plugins_url( 'admin/css/jquery-ui.theme.css', __FILE__), array(), '', 'all' );
     wp_register_style( 'main', plugins_url( 'admin/css/main.css', __FILE__), array(), '', 'all' );
     wp_register_style( 'annotation', plugins_url( 'admin/css/annotation.css', __FILE__), array(), '', 'all' );
 
     wp_enqueue_style( 'lighttabs' );
-    wp_enqueue_style( 'jquery-ui' );
-    wp_enqueue_style( 'jquery-ui_theme' );
     wp_enqueue_style( 'main' );
     wp_enqueue_style( 'annotation' );
 }
@@ -70,12 +66,11 @@ function wpcycle_scripts_load() {
 }
 
 function admin_js(){
-    wp_register_script( 'jquery-ui', plugins_url( 'admin/js/jquery-ui.min.js', __FILE__ ) );
     wp_register_script( 'lighttabs', plugins_url( 'admin/js/lighttabs.js', __FILE__ ) );
     wp_register_script( 'jquery_actual', plugins_url( 'assets/js/jquery.actual.js', __FILE__ ) );
     wp_register_script( 'scripts', plugins_url( 'admin/js/scripts.js', __FILE__ ) );
 
-    wp_enqueue_script('jquery-ui');
+    wp_enqueue_script('jquery-ui-dialog');
     wp_enqueue_script('lighttabs');
     wp_enqueue_script('jquery_actual');
     wp_enqueue_script('scripts');

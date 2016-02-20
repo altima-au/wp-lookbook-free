@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (!isset($_POST['noredirect']) && isset($_REQUEST['page']) && $_REQUEST['page'] == 'lookbook') {
-        wp_redirect("http://{$_SERVER['SERVER_NAME']}/wp-admin/admin.php?page=lookbook".$url_tail);
+        $site_url = esc_url( home_url( '/' ) );
+        wp_redirect($site_url . "wp-admin/admin.php?page=lookbook".$url_tail);
         exit;
     }
 
@@ -343,25 +344,23 @@ function store_slider() {
     $wpdb->show_errors();
     $user_data = prepare_data($_POST);
 
-    if(is_numeric($_POST['slider_id'])) {
-
-        /**
-         * Checking if need resize already created images
-         */
-        $check_res = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT
-                    *
-                FROM
-                    `" . $wpdb->prefix . SLIDER_TABLE . "`
+    /**
+     * Checking if need resize already created images
+     */
+    $check_res = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT
+                *
+            FROM
+                `" . $wpdb->prefix . SLIDER_TABLE . "`
                 WHERE
                     id = %d",
-                $_POST['slider_id']
-            ),
-            ARRAY_A
-        );
+            $_POST['slider_id']
+        ),
+        ARRAY_A
+    );
 
-
+    if($check_res[0]['id']) {
         /**
          * Update
          */
@@ -412,6 +411,8 @@ function store_slider() {
 
 function manage_slides($slider_id = 1) {
     global $wpdb;
+
+    $upload_dir_info = wp_upload_dir();
 
     $error_msg = prepare_upload_msg();
     if (!empty($error_msg)) {
@@ -495,7 +496,7 @@ function manage_slides($slider_id = 1) {
         echo
             '<tr>
                 <td>'.$s.'</td>
-                <td><img src="/wp-content/uploads/'.UPLOAD_FOLDER_NAME_THUMB . "/" . $slider_id . "/" . $slider['picture'].'" /></td>
+                <td><img src="' . $upload_dir_info['baseurl'] . '/' .UPLOAD_FOLDER_NAME_THUMB . "/" . $slider_id . "/" . $slider['picture'].'" /></td>
                 <td>
                     <strong><a href="admin.php?page=lookbook&lb_action=add_slides&slider_id='.$slider_id.'&id='.$slider['id'].'">' . $slider['name'] . '</a><br>
                     <div class="row-actions">
@@ -759,7 +760,6 @@ function store_slide() {
 
 function add_slides() {
     global $wpdb;
-
     wp_enqueue_script('annotate');
     $page_header = __('Create New Slide');
 
@@ -777,6 +777,7 @@ function add_slides() {
         ARRAY_A
     );
 
+    $upload_dir_info = wp_upload_dir();
 
     if (isset($_GET['id'])) {
         $page_header = __('Edit Slide');
@@ -877,7 +878,7 @@ function add_slides() {
                                 jQuery("#lb_tmp_picture").val(data.tmp_file);
                                 jQuery("#lb_tmp_picture_name").val(data.file_name);
                                 jQuery("#upload_results").text(data.msg[0]);
-                                var tmp_img = '<img id="LookbookImage" width="<?php echo $slider_options[0]['width'];?>px" height="<?php echo $slider_options[0]['height'];?>px" src="/wp-content/uploads/' + data.preview_file + '" />';
+                                var tmp_img = '<img id="LookbookImage" width="<?php echo $slider_options[0]['width'];?>px" height="<?php echo $slider_options[0]['height'];?>px" src="<?php echo $upload_dir_info['baseurl'];?>/' + data.preview_file + '" />';
                                 jQuery("#LookbookImageBlock").html(tmp_img);
                                 annotate = InitHotspotBtn();
                             }
@@ -892,7 +893,8 @@ function add_slides() {
         });
     </script>
     <?php
-    $image = (empty($res[0]['picture'])) ? '' : '<img id="LookbookImage" width="'.$slider_options[0]['width'].'" height="'.$slider_options[0]['height'].'" src="/wp-content/uploads/'.UPLOAD_FOLDER_NAME.'/'.$_GET['slider_id'] . '/' . $res[0]['picture'] . '" />';
+
+    $image = (empty($res[0]['picture'])) ? '' : '<img id="LookbookImage" width="'.$slider_options[0]['width'].'" height="'.$slider_options[0]['height'].'" src="' . $upload_dir_info['baseurl'] . '/'.UPLOAD_FOLDER_NAME.'/'.$_GET['slider_id'] . '/' . $res[0]['picture'] . '" />';
 
     echo
         '<div><h2>' . $page_header . '</h2>
@@ -1186,6 +1188,7 @@ function ajax_upload() {
             );
 
             $upload_dir_info = wp_upload_dir();
+
             preg_match("#\.(\w+)$#siu", $_FILES['lb_picture']['name'], $matches);
             $tmp_file_name = time().$matches[0];
             $tmp_file_name_preview = 'preview_' . $tmp_file_name;
@@ -1418,6 +1421,7 @@ function store_options() {
          */
         store_slider();
     }
-    wp_redirect("http://{$_SERVER['SERVER_NAME']}/wp-admin/admin.php?page=lookbook");
+    $site_url = esc_url( home_url( '/' ) );
+    wp_redirect($site_url . "wp-admin/admin.php?page=lookbook");
     exit;
 }

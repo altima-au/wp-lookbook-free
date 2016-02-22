@@ -192,10 +192,10 @@ button.image-annotate-add {
 }
 #image-annotate-edit-form button.image-annotate-edit-delete span{
     padding: 1px 0px 5px 20px;
-    background: url(../images/delete_btn_icon.png) no-repeat;
+    background: url("../images/delete_btn_icon.png") no-repeat;
 }
 .image-annotate-edit-close span {
-    background: url(../images/cancel_btn_icon.png) no-repeat;
+    background: url("../images/cancel_btn_icon.png") no-repeat;
 }
 .ui-resizable {
     position: relative;

@@ -39,6 +39,10 @@ function alfw_slider_render_func($atts) {
         return;
     }
 
+    $upload_dir_info = wp_upload_dir();
+    $wp_root_path = get_home_path();
+    $site_url = get_site_url();
+
     wp_enqueue_script('hotspots');
     wp_enqueue_script('actual');
     wp_enqueue_script('carousel');
@@ -58,10 +62,11 @@ function alfw_slider_render_func($atts) {
     $show_desc = get_option("wplb_free_show_desc_in_popup");
     $show_addcart = get_option("wplb_free_show_addcart_in_popup");
 
-    $path_2_pic = get_option('wplb_free_hspt_icon', '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png');
+    $path_2_pic = get_option('wplb_free_hspt_icon', $site_url . '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png');
     if (empty($path_2_pic)) {
-        $path_2_pic = '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png';
+        $path_2_pic = $site_url . '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png';
     }
+
     $hot_point_icon = '<img class="hotspot-icon" src="' . $path_2_pic . '" />';
 
     $only_visible_element = 'AND `status`=1';
@@ -332,7 +337,7 @@ function alfw_slider_render_func($atts) {
             }
 
             echo '<div class="slide" id="s_img_'.$slide['id'].'" '.$slide['fx'].' data-cycle-desc="'.$slide['caption'].'">
-                    ' . $a_start . '<img src="/wp-content/uploads/' . UPLOAD_FOLDER_NAME . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />' . $overley .  $a_end . '
+                    ' . $a_start . '<img src="'.$upload_dir_info['baseurl'].'/' . UPLOAD_FOLDER_NAME . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />' . $overley .  $a_end . '
                  </div>'."\n";
 
 
@@ -368,7 +373,7 @@ function alfw_slider_render_func($atts) {
 
                     foreach($slides as $slide){
                         echo '<li class="thumb">
-                                <img src="/wp-content/uploads/' . UPLOAD_FOLDER_NAME_THUMB . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />
+                                <img src="'.$upload_dir_info['baseurl']. '/' . UPLOAD_FOLDER_NAME_THUMB . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />
                              </li>'."\n";
                     }
                 echo

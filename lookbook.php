@@ -138,7 +138,7 @@ function lookbook_install () {
         dbDelta($sql);
 
         $wpdb->query('INSERT INTO
-              `wp_lookbook_sliders_free` (`id`, `name`, `width`, `height`, `slider_effect`, `show_navigation`, `navigation_on_hover_state_only`, `show_thumbnails`, `deny_resize_img`, `pause`, `transition_duration`, `content_before`, `content_after`, `status`, `show_slide_caption`, `updated`, `created`, `thumb_width`, `thumb_height`)
+              `' . $table_name . '` (`id`, `name`, `width`, `height`, `slider_effect`, `show_navigation`, `navigation_on_hover_state_only`, `show_thumbnails`, `deny_resize_img`, `pause`, `transition_duration`, `content_before`, `content_after`, `status`, `show_slide_caption`, `updated`, `created`, `thumb_width`, `thumb_height`)
             VALUES
               (1, \'Slide 1\', 1024, 500, \'a:1:{i:0;s:4:"fade";}\', 0, 0, 1, 0, 4000, 1500, \'\', \'\', 1, 0, \'0000-00-00 00:00:00\', \'0000-00-00 00:00:00\', 150, 100);');
 

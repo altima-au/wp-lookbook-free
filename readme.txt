@@ -64,6 +64,10 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
 
 == Changelog ==
 
+= 1.0.1
+
+* Bug fix release (Bug fix release, improvements for subdomain andsub folder installation) (released 02/22/2016)
+
 = 1.0 =
 
 * First public release.

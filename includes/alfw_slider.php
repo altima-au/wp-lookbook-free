@@ -42,6 +42,7 @@ function alfw_slider_render_func($atts) {
     $upload_dir_info = wp_upload_dir();
     $wp_root_path = get_home_path();
     $site_url = get_site_url();
+    $plugin_folder_name = pathinfo(ALTIMA_LOOKBOOK_PLUGIN_DIR);
 
     wp_enqueue_script('hotspots');
     wp_enqueue_script('actual');
@@ -62,9 +63,9 @@ function alfw_slider_render_func($atts) {
     $show_desc = get_option("wplb_free_show_desc_in_popup");
     $show_addcart = get_option("wplb_free_show_addcart_in_popup");
 
-    $path_2_pic = get_option('wplb_free_hspt_icon', $site_url . '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png');
+    $path_2_pic = get_option('wplb_free_hspt_icon', $site_url . '/wp-content/plugins/'.$plugin_folder_name['basename'].'/admin/images/hotspot-icon.png');
     if (empty($path_2_pic)) {
-        $path_2_pic = $site_url . '/wp-content/plugins/lookbook-free/admin/images/hotspot-icon.png';
+        $path_2_pic = $site_url . '/wp-content/plugins/'.$plugin_folder_name['basename'].'/admin/images/hotspot-icon.png';
     }
 
     $hot_point_icon = '<img class="hotspot-icon" src="' . $path_2_pic . '" />';

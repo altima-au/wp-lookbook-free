@@ -3,28 +3,18 @@
 *    Plugin Name: Altima LookBook Free Version
 *    Description: Slider with Hotspot points
 *    Text Domain: http://altimawebsystems.com/
-*    Version: 1.0.2
+*    Version: 1.0.3
 *    Author: altimawebsystems.com
 *    Tested up to: 4.3.1
 */
 require_once( ABSPATH . 'wp-includes/pluggable.php' );
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-$upload_dir_info = wp_upload_dir();
-
-define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0' );
+define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0.3' );
 define ( 'ALTIMA_LOOKBOOK_BASENAME', plugin_basename( __FILE__ ) );
 define ( 'ALTIMA_LOOKBOOK_NAME', trim( dirname( ALTIMA_LOOKBOOK_BASENAME ), '/' ) );
 define ( 'ALTIMA_LOOKBOOK_PLUGIN_DIR', untrailingslashit( dirname( __FILE__ ) ) );
 define ( 'ALTIMA_LOOKBOOK_PLUGIN_URL', untrailingslashit( plugins_url( '', __FILE__ ) ) );
-define ( 'UPLOAD_FOLDER_NAME', 'sliders_free');
-define ( 'UPLOAD_FOLDER_NAME_THUMB', 'sliders_free_thumb');
-define ( 'UPLOAD_FOLDER_NAME_ORIG', 'sliders_free_orig');
-define ( 'FULL_UPLOAD_PATH', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME);
-define ( 'FULL_UPLOAD_PATH_ORIG', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_ORIG);
-define ( 'FULL_UPLOAD_PATH_THUMB', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_THUMB);
-define ( 'SLIDER_TABLE', 'lookbook_sliders_free');
-define ( 'SLIDES_TABLE', 'lookbook_slides_free');
 
 require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_settings.php';
 require_once ALTIMA_LOOKBOOK_PLUGIN_DIR . '/includes/alfw_functions.php';

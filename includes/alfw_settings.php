@@ -1,8 +1,23 @@
 <?php
+
+$upload_dir_info = wp_upload_dir();
+
+define ( 'UPLOAD_FOLDER_NAME', 'sliders_free');
+define ( 'UPLOAD_FOLDER_NAME_THUMB', 'sliders_free_thumb');
+define ( 'UPLOAD_FOLDER_NAME_ORIG', 'sliders_free_orig');
+
+define ( 'SLIDER_TABLE', 'lookbook_sliders_free');
+define ( 'SLIDES_TABLE', 'lookbook_slides_free');
+
+define ( 'FULL_UPLOAD_PATH', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME);
+define ( 'FULL_UPLOAD_PATH_ORIG', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_ORIG);
+define ( 'FULL_UPLOAD_PATH_THUMB', $upload_dir_info['basedir'] . '/' . UPLOAD_FOLDER_NAME_THUMB);
+
 /**
  * Plugin fields options
  */
 global $lookbook_settings_fields;
+
 $lookbook_settings_fields = array (
     'wplb_free_max_file_size' => 20000000,
     'wplb_free_allow_ext' => 'png,gif,jpg',

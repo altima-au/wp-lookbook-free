@@ -221,7 +221,7 @@
                     } 
                     else
                     {
-                        jQuery.post( "/wp-admin/admin.php?page=lookbook&lb_action=check_post_id", {post_id: jQuery("#image-annotate-sku").val(), noredirect: 1}, function( data ) {
+                        jQuery.post( relative_url + "/wp-admin/admin.php?page=lookbook&lb_action=check_post_id", {post_id: jQuery("#image-annotate-sku").val(), noredirect: 1}, function( data ) {
                             if (data != 1) {
                                 alert(image.captions.prod_dont_exists_err+'"'+sku+'" ' + data);
                                 return false;

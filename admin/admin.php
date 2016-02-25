@@ -805,6 +805,7 @@ function add_slides() {
     <script type="application/javascript">
         var annotate;
         var response;
+        var relative_url = '<?php echo get_site_url()?>';
         function InitHotspotBtn() {
             if (jQuery("img#LookbookImage")) {
                 var annotObj = jQuery("img#LookbookImage").annotateImage({

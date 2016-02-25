@@ -3,14 +3,14 @@
 *    Plugin Name: Altima LookBook Free Version
 *    Description: Slider with Hotspot points
 *    Text Domain: http://altimawebsystems.com/
-*    Version: 1.0.3
+*    Version: 1.0.4
 *    Author: altimawebsystems.com
 *    Tested up to: 4.3.1
 */
 require_once( ABSPATH . 'wp-includes/pluggable.php' );
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0.3' );
+define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0.4' );
 define ( 'ALTIMA_LOOKBOOK_BASENAME', plugin_basename( __FILE__ ) );
 define ( 'ALTIMA_LOOKBOOK_NAME', trim( dirname( ALTIMA_LOOKBOOK_BASENAME ), '/' ) );
 define ( 'ALTIMA_LOOKBOOK_PLUGIN_DIR', untrailingslashit( dirname( __FILE__ ) ) );

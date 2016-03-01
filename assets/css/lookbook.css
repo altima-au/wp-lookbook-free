@@ -279,9 +279,8 @@
     font: bold 12px Tahoma,Arial;
     color: #7dad01;
     padding-top: 8px;
-    float: left;
-    clear: both;
     width: 100%;
+	margin-bottom: 4px;
 }
 
 .hotspot .product-info .price .old-price{
@@ -346,7 +345,7 @@
 	letter-spacing:normal;
     font-weight: bold;
     line-height: 1;
-    padding: 12px 20px;
+    padding: 8px 20px;
 	margin: 0 auto;
     text-decoration: none;
 	text-transform: inherit;
@@ -363,11 +362,14 @@
     color: #666;	
 	padding: 3px;
 	margin:0 0 4px 0;
+	font-size: inherit;
 }
 
 .lb_conteyner .price ins {
     background: #fff9c0 none repeat scroll 0 0;
     text-decoration: none;
+	color:inherit;
+    padding: 0;
 }
 
 /** Adaptive style **/

@@ -5,7 +5,7 @@ Developer link: http://shop.altima.net.au
 Tags: lookbook, slider, hotspot, woocommerce
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPL v3
 License URI: http://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -63,6 +63,10 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
 5. Admin interface - adding hotspot
 
 == Changelog ==
+
+= 1.0.7 =
+
+* Test for compatibility with WP 4.7 (released 12/14/2016)
 
 = 1.0.6 =
 

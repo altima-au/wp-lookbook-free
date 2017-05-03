@@ -200,31 +200,31 @@
                 }
             }  
             
-        
+
+            var hide_popup = false;
+
             if (($("#data-type-link").attr('checked')!='checked') && ($("#data-type-sku").attr('checked')!='checked')) {
                 alert(image.captions.select_link_type_err);
                 return false;
-            }
-            else
-            {
+            } else {
                if ($("#data-type-link").attr('checked')=='checked') {
                     if ( ($.trim(text)=='') || ($.trim(href)=='') || !(/^(ftp|http|https):\/\/[^ "]+$/.test(href)) ) {
                         alert(image.captions.link_required_err);
                         return false;
+                    }else{
+                        hide_popup = true;
                     }
-               }
-               else
-               {
+               }else {
                     if ($.trim(sku)=='') {
                         alert(image.captions.enter_sku_err);
                         return false;
-                    } 
-                    else
-                    {
+                    }else {
                         jQuery.post( relative_url + "/wp-admin/admin.php?page=lookbook&lb_action=check_post_id", {post_id: jQuery("#image-annotate-sku").val(), noredirect: 1}, function( data ) {
                             if (data != 1) {
-                                alert(image.captions.prod_dont_exists_err+'"'+sku+'" ' + data);
+                                alert(image.captions.prod_dont_exists_err + '"' + sku + '" ' + data);
                                 return false;
+                            }else {
+                                editable.destroy();
                             }
                         }).fail(function() {
                             alert("Unable to check product ID");
@@ -236,6 +236,7 @@
             }
 
             // Add to canvas
+            //console.log(note);
             if (note) {
                 note.resetPosition(editable, text, href, sku);             
             } else {
@@ -246,7 +247,11 @@
             }  
 
             $('#'+image.input_field_id).val(JSON.stringify(image.notes));
-            editable.destroy();
+
+            if (hide_popup){
+                editable.destroy();
+            }
+
         });
         editable.form.append(ok);
     };

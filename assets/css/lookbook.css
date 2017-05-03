@@ -9,7 +9,11 @@
     box-sizing: border-box;
     width: 100%;
 }
-.cycle-slideshow { margin: 10px auto; padding: 0; overflow: hidden;}
+.cycle-slideshow {
+    margin: 10px auto;
+    padding: 0;
+    overflow: visible;
+}
 .cycle-slideshow .slide img {
     position: absolute;
     top: 0;
@@ -305,7 +309,16 @@
     float:right;
     padding-top: 8px;
 }
-.pro-detail-div .desc img {float:left; padding: 0 5px 5px 0; position: relative;}
+.pro-detail-div .desc img {
+    float:left;
+    padding: 0 5px 5px 0;
+    position: relative;
+}
+
+.pro-detail-div, .pro-detail-div div {
+    z-index: inherit;
+    position: relative;
+}
 
 .clearfix:after {
     content: ".";

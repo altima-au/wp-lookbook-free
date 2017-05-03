@@ -239,73 +239,82 @@ function alfw_slider_render_func($atts) {
                         if (!empty($point->sku) && is_numeric($point->sku)){
 
                             $post_data = get_post($point->sku, ARRAY_A);
+                            try {
+                                $product = new WC_Product( $post_data['ID'] );
+                                $price = $product->get_price_html();
+                                $stock_status = $product->is_in_stock() ? 'In stock' : 'Out of stock';
+                                $product_url = get_permalink($post_data['ID']);
 
-                            $product = new WC_Product( $post_data['ID'] );
-                            $price = $product->get_price_html();
-                            $stock_status = $product->is_in_stock() ? 'In stock' : 'Out of stock';
-                            $product_url = get_permalink($post_data['ID']);
+                                $url = wp_get_attachment_image_src( get_post_thumbnail_id($post_data['ID']));
 
-                            $url = wp_get_attachment_image_src( get_post_thumbnail_id($post_data['ID']));
+                                $status_block = '';
+                                $price_block = '';
+                                $text_block = '';
+                                $addcart_block = '';
+                                $img_block = '';
 
-                            $status_block = '';
-                            $price_block = '';
-                            $text_block = '';
-                            $addcart_block = '';
-                            $img_block = '';
+                                if ($show_desc) {
+                                    $img_block = (!empty($url[0])) ? '<img src="' . $url[0] . '" style="width:50px" />' : '';
+                                }
 
-                            if ($show_desc) {
-                                $img_block = (!empty($url[0])) ? '<img src="' . $url[0] . '" style="width:50px" />' : '';
-                            }
+                                switch($post_data['post_type']){
+                                    case 'post':
+                                        if ($show_desc) {
+                                            $text_block = mb_substr(strip_tags($post_data['post_content']), 0, 100);
+                                        }
+                                    break;
+                                    case 'page':
+                                        if ($show_desc) {
+                                            $text_block = mb_substr(strip_tags($post_data['post_content']), 0, 100);
+                                        }
+                                    break;
+                                    case 'product':
+                                        $status_block = '<div class="out-of-stock"><span>' . $stock_status . '</span></div>';
+                                        $price_block = '<div class="price">'.$price.'</div>';
 
-                            switch($post_data['post_type']){
-                                case 'post':
-                                    if ($show_desc) {
-                                        $text_block = mb_substr(strip_tags($post_data['post_content']), 0, 100);
-                                    }
-                                break;
-                                case 'page':
-                                    if ($show_desc) {
-                                        $text_block = mb_substr(strip_tags($post_data['post_content']), 0, 100);
-                                    }
-                                break;
-                                case 'product':
-                                    $status_block = '<div class="out-of-stock"><span>' . $stock_status . '</span></div>';
-                                    $price_block = '<div class="price">'.$price.'</div>';
+                                        if ($show_desc) {
+                                            $text_block = mb_substr(strip_tags($post_data['post_excerpt']), 0, 100);
+                                        }
 
-                                    if ($show_desc) {
-                                        $text_block = mb_substr(strip_tags($post_data['post_excerpt']), 0, 100);
-                                    }
+                                        if ($show_addcart) {
+                                            $addcart_block =
+                                            '<div class="add-to-cart">
+                                                <form method="post" action="'. esc_url($product_url). '">
+                                                    <input type="hidden" value="' . $post_data['ID'] . '" name="add-to-cart">
+                                                    <label for="qty">' . __('Qty') . ':</label>
+                                                    <input type="text" class="qty" title="Qty" value="1" maxlength="12" id="qty" name="quantity">
+                                                    <button class="button btn-cart" title="Add to Cart" type="submit"><span>' . __('Add to Cart') . '</span></button>
+                                                </form>
+                                            </div>';
+                                        }
+                                    break;
 
-                                    if ($show_addcart) {
-                                        $addcart_block =
-                                        '<div class="add-to-cart">
-                                            <form method="post" action="'. esc_url($product_url). '">
-                                                <input type="hidden" value="' . $post_data['ID'] . '" name="add-to-cart">
-                                                <label for="qty">' . __('Qty') . ':</label>
-                                                <input type="text" class="qty" title="Qty" value="1" maxlength="12" id="qty" name="quantity">
-                                                <button class="button btn-cart" title="Add to Cart" type="submit"><span>' . __('Add to Cart') . '</span></button>
-                                            </form>
-                                        </div>';
-                                    }
-                                break;
+                                }
 
-                            }
-
-                            $point->text =
-                            '<div class="product-info">
-                                <div class="pro-detail-div">
-                                    <div class="left-detail">
-                                        <a href="' . $product_url .'">' . $post_data['post_title'] . '</a>
-                                        ' . $status_block . '
-                                        <div class="desc">
-                                            ' . $img_block . '
-                                            ' . $text_block . '
+                                $point->text =
+                                '<div class="product-info">
+                                    <div class="pro-detail-div">
+                                        <div class="left-detail">
+                                            <a href="' . $product_url .'">' . $post_data['post_title'] . '</a>
+                                            ' . $status_block . '
+                                            <div class="desc">
+                                                ' . $img_block . '
+                                                ' . $text_block . '
+                                            </div>
+                                            ' . $price_block . '
+                                            ' . $addcart_block . '
                                         </div>
-                                        ' . $price_block . '
-                                        ' . $addcart_block . '
                                     </div>
-                                </div>
-                            </div>' . $hot_point_icon;
+                                </div>' . $hot_point_icon;
+                            }catch (Exception $e) {
+                                    $point->text = '<div class="product-info">
+                                                <div class="pro-detail-div">
+                                                    <div>
+                                                        <a href="#">' . $e->getMessage() . '</a>
+                                                    </div>
+                                                </div>
+                                            </div>' . $hot_point_icon;
+                            }
                         }else {
                             $point->text = '<div class="product-info">
                                                 <div class="pro-detail-div">

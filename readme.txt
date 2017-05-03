@@ -4,8 +4,8 @@ Contributors: altima-interactive
 Developer link: http://shop.altima.net.au
 Tags: lookbook, slider, hotspot, woocommerce
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 1.0.7
+Tested up to: 4.7.4
+Stable tag: 1.0.8
 License: GPL v3
 License URI: http://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -32,7 +32,7 @@ There is a more advanced version of the plug-in with unlimited number of slides 
 == Requirements ==
 
 1. Installed Wordpress version 4.0 or higher
-2. Installed WooCommerce 2.3.0 or higher (Tested up to 2.6.0-dev)
+2. Installed WooCommerce 2.3.0 or higher (Tested up to 3.0.1)
 
 == Installation ==
 
@@ -63,6 +63,13 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
 5. Admin interface - adding hotspot
 
 == Changelog ==
+
+= 1.0.8 =
+
+* Fix some bugs
+* CSS improvements
+* Test for compatibility with WP 4.7.4 (released 04/20/2017)
+* Test for compatibility with WooCommerce 3.0.1 (released 04/06/2017)
 
 = 1.0.7 =
 

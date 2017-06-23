@@ -14,7 +14,14 @@ $altima_jq(document).ready(function() {
         }
     });
 
-
+    $altima_jq(document).on( 'click', '#wp-lb-free-notice .notice-dismiss', function() {
+        jQuery.ajax({
+            url: ajaxurl,
+            data: {
+                action: 'wplookbook_free_dismiss_acf_notice'
+            }
+        });
+    });
 });
 
 function show_popup(slider_id) {

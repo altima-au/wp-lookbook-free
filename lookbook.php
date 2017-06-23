@@ -3,14 +3,14 @@
 *    Plugin Name: Altima LookBook Free Version
 *    Description: Slider with Hotspot points
 *    Text Domain: http://altimawebsystems.com/
-*    Version: 1.0.8
+*    Version: 1.0.9
 *    Author: altimawebsystems.com
-*    Tested up to: 4.7.4
+*    Tested up to: 4.8
 */
 require_once( ABSPATH . 'wp-includes/pluggable.php' );
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0.8' );
+define ( 'ALTIMA_LOOKBOOK_VERSION', '1.0.9' );
 define ( 'ALTIMA_LOOKBOOK_BASENAME', plugin_basename( __FILE__ ) );
 define ( 'ALTIMA_LOOKBOOK_NAME', trim( dirname( ALTIMA_LOOKBOOK_BASENAME ), '/' ) );
 define ( 'ALTIMA_LOOKBOOK_PLUGIN_DIR', untrailingslashit( dirname( __FILE__ ) ) );
@@ -192,10 +192,20 @@ function lookbook_install () {
     $file->create_folder_recursive(FULL_UPLOAD_PATH);
     $file->create_folder_recursive(FULL_UPLOAD_PATH_THUMB);
     $file->create_folder_recursive(FULL_UPLOAD_PATH_ORIG);
+
+    add_option('update2prof_notice', 0,0);
 }
 
 register_activation_hook(__FILE__, 'lookbook_install');
 
+register_deactivation_hook(__FILE__, 'lookbook_deactivate');
+
 function lookbook_add_menu() {
     add_menu_page(__('LookBookFree'), __('LookBookFree'), 'manage_options', 'lookbook', 'alfw_dashboard');
+}
+
+function lookbook_deactivate() {
+    if( !function_exists( 'the_field' )) {
+        update_option( 'update2prof_notice', 0 );
+    }
 }

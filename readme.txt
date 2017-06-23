@@ -4,8 +4,8 @@ Contributors: altima-interactive
 Developer link: http://shop.altima.net.au
 Tags: lookbook, slider, hotspot, woocommerce
 Requires at least: 4.0
-Tested up to: 4.7.4
-Stable tag: 1.0.8
+Tested up to: 4.8
+Stable tag: 1.0.9
 License: GPL v3
 License URI: http://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -27,7 +27,7 @@ Altima Lookbooks Free for WooCommerce provides the next functionality:
 7. Support of responsiveness - lookbook sliders are adaptive and resize according screen resolution
 8. Mobile and touchscreens friendly - support of gestures to slide the slides
 
-There is a more advanced version of the plug-in with unlimited number of slides and sliders and other additional features available at http://shop.altima.net.au/wordpress-plug-ins/lookbook-woocommerce-professional.html	
+There is a more advanced version of the plug-in with unlimited number of slides and sliders and other additional features available at https://shop.altima.net.au/woocommerce-lookbook-professional.html
 
 == Requirements ==
 
@@ -49,7 +49,7 @@ You're done!
 == Frequently Asked Questions ==
 
 1. What is the difference between Free and Professional versions of Altima Lookbook for WooCommerce?
-Professional version allows to create unlimited number of sliders, slides and hotspots and has other additional nice features. You can get it for $49 from http://shop.altima.net.au/wordpress-plug-ins/lookbook-woocommerce-professional.html
+Professional version allows to create unlimited number of sliders, slides and hotspots and has other additional nice features. You can get it for $49 from https://shop.altima.net.au/woocommerce-lookbook-professional.html
 
 2. Can I upgrade from Free to Professional version?
 Unfortunately not, it is completely separate plug-ins, so you need to deactivate Free and install Pro version if decide to switch.
@@ -63,6 +63,11 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
 5. Admin interface - adding hotspot
 
 == Changelog ==
+
+= 1.0.9 =
+
+* Test for compatibility with WP 4.8
+* Test for compatibility with WooCommerce 3.0.9
 
 = 1.0.8 =
 

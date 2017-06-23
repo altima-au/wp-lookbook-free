@@ -1,5 +1,14 @@
 <?php
-    $url_tail = '';
+/**
+ *    Plugin Name: Altima LookBook Free Version
+ *    Description: Slider with Hotspot points
+ *    Text Domain: http://altimawebsystems.com/
+ *    Version: 1.0.9
+ *    Author: altimawebsystems.com
+ *    Tested up to: 4.8
+ */
+
+$url_tail = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -29,8 +38,8 @@ function alfw_dashboard(){
 	echo '
 	<div class="lookbook_promo">
     	<a class="altima_logo_firm" target="_blank" href="http://altimawebsystems.com/"><img src="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/images/altima_logo.png"></a>
-        <p>Need lookbook with unlimited number of slide, sliders and hotspots? Check Altima Lookbook Professional!</p>
-        <a target="_blank" class="get_pro" href="http://shop.altima.net.au/lookbook-woocommerce-professional.html "><img src="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/images/ico_basket.png">GET THE ALTIMA LOOKBOOK PROFESSIONAL</a>
+        <p>Need unlimited number of sliders, slides and hotspots and priority support?</p>
+        <a target="_blank" class="get_pro" href="https://shop.altima.net.au/woocommerce-lookbook-professional.html"><img src="'.ALTIMA_LOOKBOOK_PLUGIN_URL.'/admin/images/ico_basket.png">Check Altima Lookbook Pro For WooCommerce!</a>
     </div>';
 	
 	
@@ -1425,4 +1434,23 @@ function store_options() {
     $site_url = esc_url( home_url( '/' ) );
     wp_redirect($site_url . "wp-admin/admin.php?page=lookbook");
     exit;
+}
+
+function update2prof_notice() {
+    echo '<div id="wp-lb-free-notice" class="updated notice my-acf-notice is-dismissible">
+            <p>Now Professional version of Altima Lookbook for WooCommerce available. Unlimited number of sliders, slides and hotspots, priority support.
+            Visit <a target="_blank" href="https://shop.altima.net.au/woocommerce-lookbook-professional.html">Altima Lookbook Pro for WooCommerce</a> to purchase.</p>
+         </div>';
+}
+
+$update2prof_notice = get_option('update2prof_notice');
+
+if( !function_exists( 'the_field' ) && empty( $update2prof_notice ) ) {
+    add_action('admin_notices', 'update2prof_notice');
+}
+
+add_action('wp_ajax_wplookbook_free_dismiss_acf_notice', 'wplookbook_free_dismiss_acf_notice');
+
+function wplookbook_free_dismiss_acf_notice() {
+    update_option('update2prof_notice', 1);
 }

@@ -28,7 +28,8 @@ $lookbook_settings_fields = array (
     'wplb_free_hspt_icon' => '',
     'wplb_free_thumb_height' => 100,
     'wplb_free_thumb_width' => 100,
-    'wplb_free_debug_domain'=>1
+    'wplb_free_debug_domain'=>1,
+    'update2prof_notice' => 0
 );
 
 /**

@@ -5,7 +5,7 @@
  * Uninstalling Altima LookBook deletes sliders, slides, options and uploaded files.
  *
  * @author      altimawebsystems.com
- * @version     1.0.9
+ * @version     1.0.10
  */
 
 

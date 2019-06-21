@@ -3,9 +3,9 @@
  *    Plugin Name: Altima LookBook Free Version
  *    Description: Slider with Hotspot points
  *    Text Domain: http://altimawebsystems.com/
- *    Version: 1.0.9
+ *    Version: 1.0.10
  *    Author: altimawebsystems.com
- *    Tested up to: 4.8
+ *    Tested up to: 5.2.1
  */
 
 $url_tail = '';

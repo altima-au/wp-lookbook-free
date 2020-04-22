@@ -1154,8 +1154,17 @@ function view_slider() {
                 </h1>
             </div>
             ';
+
     echo '<div style="width: 75%">';
-    echo do_shortcode('[slider_render slider_id="'.$_GET['id'].'" admin=true]');
+
+    $wp_version = (float)get_bloginfo('version');
+
+    if ($wp_version >= 5.4) {
+        echo apply_shortcodes('[slider_render slider_id="'.$_GET['id'].'" admin=true]');
+    }else {
+        echo do_shortcode('[slider_render slider_id="'.$_GET['id'].'" admin=true]');
+    }
+
     echo '</div>';
     echo '</div>';
 }

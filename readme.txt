@@ -4,8 +4,8 @@ Contributors: altima-interactive
 Developer link: http://shop.altima.net.au
 Tags: lookbook, slider, hotspot, woocommerce
 Requires at least: 4.0
-Tested up to: 5.2.1
-Stable tag: 1.0.10
+Tested up to: 5.4
+Stable tag: 1.1.0
 License: GPL v3
 License URI: http://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -63,6 +63,12 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
 5. Admin interface - adding hotspot
 
 == Changelog ==
+
+= 1.1.0 =
+
+* Test for compatibility up to WP 5.4
+* Test for compatibility up to WooCommerce 4.0.1
+* Fix some issues related to the new features of WP
 
 = 1.0.10 =
 
@@ -206,6 +212,8 @@ Unfortunately not, it is completely separate plug-ins, so you need to deactivate
         It can be done by inserting the following shorcode:
 
         `<?php echo do_shortcode('[slider_render slider_id="1" admin=true]'); ?>`
+        or for WP version bigger than 5.4
+        `<?php echo apply_shortcodes('[slider_render slider_id="1" admin=true]'); ?>`
 
         For shortcode possible 1 additional boolean parameter admin=true|false,
     

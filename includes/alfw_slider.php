@@ -33,6 +33,7 @@ add_action ('check_woocommerce', 'alfw_woocommerce_not_install_notice');
 function alfw_slider_render_func($atts) {
 
     global $wpdb, $lookbook_slider_effects;
+    $output = '';
 
     if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
         do_action( 'check_woocommerce');
@@ -55,7 +56,7 @@ function alfw_slider_render_func($atts) {
     wp_enqueue_script('swipe');
 
     //$wpdb->show_errors();
-    extract($atts);
+    extract($atts, EXTR_OVERWRITE);
 
     /**
      * Get slider options
@@ -64,6 +65,7 @@ function alfw_slider_render_func($atts) {
     $show_addcart = get_option("wplb_free_show_addcart_in_popup");
 
     $path_2_pic = get_option('wplb_free_hspt_icon', $site_url . '/wp-content/plugins/'.$plugin_folder_name['basename'].'/admin/images/hotspot-icon.png');
+
     if (empty($path_2_pic)) {
         $path_2_pic = $site_url . '/wp-content/plugins/'.$plugin_folder_name['basename'].'/admin/images/hotspot-icon.png';
     }
@@ -106,7 +108,7 @@ function alfw_slider_render_func($atts) {
         );
     }
     if (empty($slides)){
-        echo __('No slides available in this slider!');
+        return __('No slides available in this slider!');
     }else {
         $effects = unserialize($slider[0]['slider_effect']);
         $slider_count = count($slides);
@@ -140,13 +142,13 @@ function alfw_slider_render_func($atts) {
             }
         }
 
-        echo '<div class="lb_conteyner">';
+        $output = '<div class="lb_conteyner">';
 
         /**
          * Output content before
          */
         if (!empty($slider[0]['content_before'])) {
-            echo '<div class="c_before">'.$slider[0]['content_before'].'</div>';
+            $output .= '<div class="c_before">'.$slider[0]['content_before'].'</div>';
         }
 
         /**
@@ -176,7 +178,7 @@ function alfw_slider_render_func($atts) {
          * Output the slider
          * cycle-slideshow
          */
-        echo '<div
+        $output .= '<div
             id="lookbookslider_'.$slider[0]['id'].'"
             class="cycle-slideshow"
             data-cycle-speed="'.$slider[0]['transition_duration'].'"
@@ -199,7 +201,7 @@ function alfw_slider_render_func($atts) {
          */
         if ($slider_count > 1) {
             if ($slider[0]['show_slide_caption']) {
-                echo '<div class="cycle-caption"></div>';
+                $output .= '<div class="cycle-caption"></div>';
                 //echo '<div class="cycle-overlay"></div>';
             }
         }
@@ -212,13 +214,13 @@ function alfw_slider_render_func($atts) {
             if ($slider[0]['navigation_on_hover_state_only']){
                 $hover = 'hover';
             }
-            echo '
+            $output .= '
             <div class="slide_commands ' . $hover . '">
                 <div class="slide_play" style="display: none;"></div>
                 <div class="slide_stop" style="display: block;"></div>
             </div>';
-            echo '<div class="slide-prev ' . $hover . '"><span></span></div>';
-            echo '<div class="slide-next ' . $hover . '"><span></span></div>';
+            $output .= '<div class="slide-prev ' . $hover . '"><span></span></div>';
+            $output .= '<div class="slide-next ' . $hover . '"><span></span></div>';
         }
 
         foreach($slides as &$slide) {
@@ -327,7 +329,6 @@ function alfw_slider_render_func($atts) {
                     }
 
                     $slide['hotsposts'] = json_encode($hotspots);
-
                 }
 
             /**
@@ -346,18 +347,18 @@ function alfw_slider_render_func($atts) {
                 }
             }
 
-            echo '<div class="slide" id="s_img_'.$slide['id'].'" '.$slide['fx'].' data-cycle-desc="'.$slide['caption'].'">
+            $output .= '<div class="slide" id="s_img_'.$slide['id'].'" '.$slide['fx'].' data-cycle-desc="'.$slide['caption'].'">
                     ' . $a_start . '<img src="'.$upload_dir_info['baseurl'].'/' . UPLOAD_FOLDER_NAME . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />' . $overley .  $a_end . '
                  </div>'."\n";
 
 
         }
 
-        echo '<div id="progress_' . $slider[0]['id'] . '"></div>';
+        $output .= '<div id="progress_' . $slider[0]['id'] . '"></div>';
 
         unset($slide);
 
-        echo '</div>';
+        $output .= '</div>';
 
         alfw_add_hotspots($slides, $slider[0]['id']);
 
@@ -367,7 +368,7 @@ function alfw_slider_render_func($atts) {
         if ( $slider_count > 1) {
             if ($slider[0]['show_thumbnails']) {
                 alfw_thumbnails_js($slider[0]['id']);
-                echo
+                $output .=
                 '<div id="pagernav_' . $slider[0]['id'] . '" class="pagernav" style="max-width: ' . $slider[0]['width'] . 'px;">
                     <ul id="thumb_nav" class="cycle-slideshow"
                         data-cycle-slides="> li.thumb"
@@ -382,152 +383,95 @@ function alfw_slider_render_func($atts) {
                     >';
 
                     foreach($slides as $slide){
-                        echo '<li class="thumb">
+                        $output .= '<li class="thumb">
                                 <img src="'.$upload_dir_info['baseurl']. '/' . UPLOAD_FOLDER_NAME_THUMB . '/' . $slider_id . '/' . $slide['picture'].'" alt="'.$slide['caption'].'" />
                              </li>'."\n";
                     }
-                echo
+                $output .=
                     '</ul>
                 </div>';
             }else {
                 /**
                  * Simple pager
                  */
-                echo '
+                $output .= '
                 <div class="pagernav" id="pagernav_' . $slider[0]['id'] . '">
                     <ul class="cycle">
                     </ul>
                 </div>';
             }
         }
+
         /**
          * Output content after
          */
         if (!empty($slider[0]['content_after'])) {
-            echo '<div class="c_after">'.$slider[0]['content_after'].'</div>';
+            $output .= '<div class="c_after">'.$slider[0]['content_after'].'</div>';
         }
 
-        echo '</div>';
+        $output .= '</div>';
     }
+
+    return $output;
 }
 
 add_shortcode( 'slider_render', 'alfw_slider_render_func');
 
 function alfw_add_hotspots($slides, $slider_id) {
+
     foreach ($slides as $slide):
-        $hotspots[] = $slide['hotsposts'];
+        $hotspots[] = json_decode($slide['hotsposts']);
     endforeach;
-    ?>
-    <script type="application/javascript">
-        var $altima_jq = jQuery.noConflict();
-        $altima_jq(document).ready(function() {
-            var hotspots_<?php echo $slider_id;?> = [<?php echo implode(",",$hotspots)?>];
-            $altima_jq('#lookbookslider_<?php echo $slider_id;?> [id^=s_img_]').each(function (i) {
-                    var ind = $altima_jq(this).index();
-                    var slide = $altima_jq(this);
-                    //console.log(hotspots[i]);
-                    //console.log(slide);
-                    $altima_jq.setHotspots(slide, hotspots_<?php echo $slider_id;?>[i]);
-                });
-            <?php
-            /**
-             * Disable hovers for slide navigation
-             */
-                if (count($slides) <= 1) {
-            ?>
-                $altima_jq( ".cycle-slideshow" ).unbind('mouseenter mouseleave');
-            <?php
-                }
-            ?>
-        });
-    </script>
-    <?php
+
+    wp_register_script(
+        'alfw_hotspots',
+        ALTIMA_LOOKBOOK_PLUGIN_URL . '/assets/js/alfw_hotspots.js',
+        array(),
+        1.0,
+        true
+    );
+
+    wp_enqueue_script( 'alfw_hotspots' );
+
+    $script_params = array(
+        'slider_id' => $slider_id,
+        'hotspots' => $hotspots
+    );
+
+    wp_localize_script( 'alfw_hotspots', 'hotspotParams_' . $slider_id, $script_params );
 }
 
 function alfw_thumbnails_js($slider_id) {
-    ?>
-    <script type="application/javascript">
+    wp_register_script(
+        'alfw_thumbnails',
+        ALTIMA_LOOKBOOK_PLUGIN_URL . '/assets/js/alfw_thumbnails.js',
+        array( /* dependencies*/ ),
+        1.0,
+        true
+    );
 
-        var $altima_jq = jQuery.noConflict();
+    wp_enqueue_script( 'alfw_thumbnails' );
 
-        $altima_jq(document).ready(function() {
-
-            slideshow = $altima_jq( '.cycle-slideshow' );
-
-            $altima_jq('#pagernav_<?php echo $slider_id;?> ul li').click(function () {
-                var index = $altima_jq('#pagernav_<?php echo $slider_id;?> ul').data('cycle.API').getSlideIndex(this);
-                $altima_jq('#lookbookslider_<?php echo $slider_id;?>').cycle('goto', index);
-                $altima_jq('#pagernav_<?php echo $slider_id;?> ul').cycle('goto', index);
-            });
-
-            slideshow.on( 'cycle-before', function( event, optionHash, outgoingSlideEl, incomingSlideEl, forwardFlag ) {
-                var index = $altima_jq('#lookbookslider_<?php echo $slider_id;?>').data('cycle.API').getSlideIndex(incomingSlideEl);
-                $altima_jq('#pagernav_<?php echo $slider_id;?> ul').cycle('goto', index);
-            });
-
-        });
-    </script>
-<?php
+    $script_params = array(
+        'slider_id' => $slider_id
+    );
+    wp_localize_script( 'alfw_thumbnails', 'thumbnailsParams_' . $slider_id, $script_params );
 }
 
 function alfw_control_js($slider_id) {
-    ?>
-    <script type="application/javascript">
+    wp_register_script(
+        'alfw_control',
+        ALTIMA_LOOKBOOK_PLUGIN_URL . '/assets/js/alfw_control.js',
+        array( /* dependencies*/ ),
+        1.0,
+        true
+    );
 
-        var altima_jq = jQuery.noConflict();
+    wp_enqueue_script( 'alfw_control' );
 
-        altima_jq(document).ready(function() {
+    $script_params = array(
+        'slider_id' => $slider_id
+    );
 
-            var slide_control_<?php echo $slider_id;?> = false;
-
-            altima_jq( "#lookbookslider_<?php echo $slider_id;?>").not('ul').hover(
-                function() {
-                    altima_jq('#lookbookslider_<?php echo $slider_id;?>').not('ul').cycle('pause');
-                }, function() {
-                    if (!slide_control_<?php echo $slider_id;?>)
-                        altima_jq('#lookbookslider_<?php echo $slider_id;?>').not('ul').cycle('resume');
-                }
-            );
-
-
-            altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_stop').click(function () {
-                altima_jq('#lookbookslider_<?php echo $slider_id;?>').not('ul').cycle('pause');
-                altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_stop').hide();
-                altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_play').show();
-                slide_control_<?php echo $slider_id;?> = true;
-            });
-
-            altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_play').click(function () {
-                altima_jq('#lookbookslider_<?php echo $slider_id;?>').cycle('resume');
-                altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_play').hide();
-                altima_jq('#lookbookslider_<?php echo $slider_id;?> .slide_stop').show();
-                slide_control_<?php echo $slider_id;?> = false;
-            });
-
-
-            var progress_<?php echo $slider_id;?> = altima_jq('#progress_<?php echo $slider_id;?>'),
-                slideshow_<?php echo $slider_id;?> = altima_jq('#lookbookslider_<?php echo $slider_id;?>' );
-
-            altima_jq('#progress_<?php echo $slider_id;?>').css({"position": "absolute", "bottom": "0", "height": "6px", "width": "0px", "background" : "#ffb900", "z-index" : "500"});
-
-            slideshow_<?php echo $slider_id;?>.on( 'cycle-initialized cycle-before', function( e, opts ) {
-                progress_<?php echo $slider_id;?>.stop(true).css( 'width', 0 );
-            });
-
-            slideshow_<?php echo $slider_id;?>.on( 'cycle-initialized cycle-after', function( e, opts ) {
-                if ( ! slideshow_<?php echo $slider_id;?>.is('.cycle-paused') )
-                    progress_<?php echo $slider_id;?>.animate({ width: '100%' }, opts.timeout, 'linear' );
-            });
-
-            slideshow_<?php echo $slider_id;?>.on( 'cycle-paused', function( e, opts ) {
-                progress_<?php echo $slider_id;?>.stop();
-            });
-
-            slideshow_<?php echo $slider_id;?>.on( 'cycle-resumed', function( e, opts, timeoutRemaining ) {
-                progress_<?php echo $slider_id;?>.animate({ width: '100%' }, timeoutRemaining, 'linear' );
-            });
-
-        });
-    </script>
-    <?php
+    wp_localize_script( 'alfw_control', 'scriptParams_' . $slider_id, $script_params );
 }
